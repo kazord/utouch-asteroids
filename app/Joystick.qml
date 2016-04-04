@@ -48,12 +48,12 @@ Circle {
             Component.onCompleted: {reset()}
         }
         onDyChanged: {
-            direction = Math.atan2(dx, -dy)* (180 / Math.PI)
+            direction = Math.atan2(dx, -dy)//* (180 / Math.PI)
             force = Math.sqrt(dx*dx+dy*dy) / ((joystick_area.width-stick.width)/2)
             if(force > 1.0) force = 1.0
         }
         onDxChanged: {
-            direction = Math.atan2(dx, -dy)* (180 / Math.PI)
+            direction = Math.atan2(dx, -dy)//* (180 / Math.PI)
             force = Math.sqrt(dx*dx+dy*dy) / ((joystick_area.width-stick.width)/2)
             if(force > 1.0) force = 1.0
         }

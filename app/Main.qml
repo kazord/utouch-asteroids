@@ -26,6 +26,7 @@ MainView {
     width: units.gu(100)
     height: units.gu(75)
 
+
     Page {
         title: i18n.tr("Asteroids")
 
@@ -76,10 +77,30 @@ MainView {
             }
 
             Joystick {
+                id:stick
                 onForceChanged: {joyF.update(force)}
                 onDirectionChanged: {joyDir.update(direction)}
                 onDxChanged: {joyX.update(dx)}
                 onDyChanged: {joyY.update(dy)}
+
+            }
+
+            Rectangle {
+                id:spacecraft
+                color:"blue"
+                width:units.gu(2)
+                height:units.gu(2)
+                property double speed: 10
+                Timer {
+                       interval: 50; running: true; repeat: true
+                       onTriggered: {
+                           //console.log(stick.direction+" "+stick.force+ " "+parent.speed)
+                           spacecraft.x+=Math.sin(stick.direction)*stick.force*parent.speed
+                       spacecraft.y-=Math.cos(stick.direction)*stick.force*parent.speed
+                       spacecraft.rotation=stick.direction*(180/Math.PI)
+                       spacecraft.speed*=1.02*stick.force
+                       if(spacecraft.speed < 10)spacecraft.speed=10}
+                   }
             }
 
         }
