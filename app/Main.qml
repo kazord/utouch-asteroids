@@ -29,31 +29,62 @@ MainView {
     Page {
         title: i18n.tr("Asteroids")
 
-        Column {
-            spacing: units.gu(1)
-            anchors {
-                margins: units.gu(2)
-                fill: parent
+        Rectangle {
+            id: background
+            //color: black
+
+            Text {
+                id: joyX
+                color: "black"
+                y:units.gu(10)
+                x:units.gu(40)
+
+                text: "X:"
+                signal update(int new_x)
+                onUpdate: {text = "X:"+new_x}
             }
 
-            Label {
-                id: label
-                objectName: "label"
+            Text {
+                id: joyY
+                color: "black"
+                y:units.gu(40)
+                x:units.gu(10)
 
-                text: i18n.tr("Hello..")
+                text: "Y:"
+                signal update(int new_y)
+                onUpdate: {text = "Y:"+new_y}
+            }
+            Text {
+                id: joyDir
+                color: "black"
+                y:units.gu(40)
+                x:units.gu(40)
+
+                text: "Dir:"
+                signal update(double new_dir)
+                onUpdate: {text = "Dir:"+new_dir}
+            }
+            Text {
+                id: joyF
+                color: "black"
+                y:units.gu(50)
+                x:units.gu(40)
+
+                text: "F:"
+                signal update(double new_dir)
+                onUpdate: {text = "F:"+new_dir}
             }
 
-            Button {
-                objectName: "button"
-                width: parent.width
-
-                text: i18n.tr("Tap me!")
-
-                onClicked: {
-                    label.text = i18n.tr("..world!")
-                }
+            Joystick {
+                onForceChanged: {joyF.update(force)}
+                onDirectionChanged: {joyDir.update(direction)}
+                onDxChanged: {joyX.update(dx)}
+                onDyChanged: {joyY.update(dy)}
             }
+
         }
+
+
     }
 }
 
