@@ -1,0 +1,17 @@
+{
+    "name": "@APP_ID@",
+    "description": "description of Asteroids",
+    "architecture": "@CLICK_ARCH@",
+    "title": "@APP_NAME@",
+    "hooks": {
+        "Asteroids": {
+            "apparmor": "Asteroids.apparmor",
+            "desktop":  "Asteroids.desktop"
+        }
+    },
+    "version": "0.1",
+    "maintainer": "kazord <kazord@gmail.com>",
+    "framework" : "ubuntu-sdk-15.04"
+}
+
+
