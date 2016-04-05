@@ -28,6 +28,6 @@ Rectangle {
     onYChanged: {
         centerY = y + radius
     }
-    Component.onCompleted: {console.log(x)}
+    //Component.onCompleted: {console.log(x)}
 }
 

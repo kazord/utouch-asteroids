@@ -32,7 +32,10 @@ MainView {
 
         Rectangle {
             id: background
-            //color: black
+            color: "#c8c8c8"
+            height: units.gu(75)
+            width: units.gu(75)
+            x:units.gu(12.5)
 
             Text {
                 id: joyX
@@ -85,23 +88,42 @@ MainView {
 
             }
 
-            Rectangle {
+            SpaceObject {
                 id:spacecraft
                 color:"blue"
-                width:units.gu(2)
-                height:units.gu(2)
-                property double speed: 10
-                Timer {
-                       interval: 50; running: true; repeat: true
-                       onTriggered: {
-                           //console.log(stick.direction+" "+stick.force+ " "+parent.speed)
-                           spacecraft.x+=Math.sin(stick.direction)*stick.force*parent.speed
-                       spacecraft.y-=Math.cos(stick.direction)*stick.force*parent.speed
-                       spacecraft.rotation=stick.direction*(180/Math.PI)
-                       spacecraft.speed*=1.02*stick.force
-                       if(spacecraft.speed < 10)spacecraft.speed=10}
-                   }
+                y:100
+                radius:units.gu(2)
+
+                //height:units.gu(2)
+                property double minspeed: 5
+                property double speed: 5
+                property double maxspeed: 50
+                onTick: {
+                    vx = Math.sin(stick.direction)*stick.force*speed
+                    vy = -1* Math.cos(stick.direction)*stick.force*speed
+                    rotation = stick.direction*(180/Math.PI)
+                    speed*=1.02*stick.force
+                    if(speed < minspeed) speed=minspeed
+                    if(speed > maxspeed) speed=maxspeed
+                }
+
+
             }
+            SpaceObject {
+                id:asteroids
+                centerX: units.gu(20)
+                centerY: units.gu(32)
+                vx: 10
+                vy: -3
+            }
+            Timer {
+               interval: 50; running: true; repeat: true
+               onTriggered: {
+                asteroids.tick()
+                spacecraft.tick()
+               }
+           }
+
 
         }
 
