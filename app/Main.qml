@@ -23,20 +23,42 @@ MainView {
     // Removes the old toolbar and enables new features of the new header.
     useDeprecatedToolbar: false
 
-    width: units.gu(100)
+    width: units.gu(50)
     height: units.gu(75)
 
 
-    Page {
-        title: i18n.tr("Asteroids")
+    Item {
+        anchors.fill:parent
+        //title: i18n.tr("Asteroids")
 
         Rectangle {
             id: background
-            color: "#c8c8c8"
-            height: units.gu(75)
-            width: units.gu(75)
-            x:units.gu(12.5)
-
+            clip:true
+            color: "#282828"
+            height: units.gu(50)
+            width: units.gu(50)
+            x:0
+            function createSpriteObjects(myProp) {
+                var component = Qt.createComponent("SpaceObject.qml");
+                var sprite = component.createObject(background, myProp);
+                if (sprite === null) {
+                    // Error Handling
+                    console.log("Error creating object");
+                }
+            }
+            function fire() {
+                var fire_speed = spacecraft.minspeed*1.5
+                var component = Qt.createComponent("FireObject.qml");
+                var sprite = component.createObject(background, {"centerX":spacecraft.centerX+spacecraft.radius*Math.sin(spacecraft.rotation*(Math.PI/180)),
+                                                        "centerY":spacecraft.centerY-spacecraft.radius*Math.cos(spacecraft.rotation*(Math.PI/180)),
+                                                        "vy":-fire_speed*Math.cos(spacecraft.rotation*(Math.PI/180)),
+                                                        "vx":fire_speed*Math.sin(spacecraft.rotation*(Math.PI/180)),
+                                                        "color": "white"});
+                if (sprite === null) {
+                    // Error Handling
+                    console.log("Error creating object");
+                }
+            }
             Text {
                 id: joyX
                 color: "black"
@@ -79,53 +101,125 @@ MainView {
                 onUpdate: {text = "F:"+new_dir}
             }
 
-            Joystick {
-                id:stick
-                onForceChanged: {joyF.update(force)}
-                onDirectionChanged: {joyDir.update(direction)}
-                onDxChanged: {joyX.update(dx)}
-                onDyChanged: {joyY.update(dy)}
 
-            }
 
-            SpaceObject {
+            SpaceCraft {
                 id:spacecraft
-                color:"blue"
+                color:"transparent"
                 y:100
-                radius:units.gu(2)
-
-                //height:units.gu(2)
-                property double minspeed: 5
-                property double speed: 5
-                property double maxspeed: 50
-                onTick: {
-                    vx = Math.sin(stick.direction)*stick.force*speed
-                    vy = -1* Math.cos(stick.direction)*stick.force*speed
-                    rotation = stick.direction*(180/Math.PI)
-                    speed*=1.02*stick.force
-                    if(speed < minspeed) speed=minspeed
-                    if(speed > maxspeed) speed=maxspeed
-                }
-
-
             }
-            SpaceObject {
+            SpaceCraft {
+                id:spacecraft_shade_px
+                color:"transparent"
+                x:spacecraft.x+parent.height
+                y:spacecraft.y
+                onTick: {
+                    x = spacecraft.x+parent.height
+                }
+            }
+            SpaceCraft {
+                id:spacecraft_shade_mx
+                color:"transparent"
+                x:spacecraft.x-parent.height
+                y:spacecraft.y
+                onTick: {
+                    x = spacecraft.x-parent.height
+                }
+            }
+            SpaceCraft {
+                id:spacecraft_shade_py
+                color:"transparent"
+                x:spacecraft.x
+                y:spacecraft.y+parent.width
+                onTick: {
+                    y = spacecraft.y+parent.width
+                }
+            }
+            SpaceCraft {
+                id:spacecraft_shade_my
+                color:"transparent"
+                x:spacecraft.x
+                y:spacecraft.y-parent.width
+                onTick: {
+                    y = spacecraft.y-parent.width
+                }
+            }
+            /*SpaceObject {
                 id:asteroids
                 centerX: units.gu(20)
                 centerY: units.gu(32)
                 vx: 10
                 vy: -3
-            }
+            }*/
+
             Timer {
                interval: 50; running: true; repeat: true
                onTriggered: {
-                asteroids.tick()
-                spacecraft.tick()
+                //asteroids.tick()
+                   for(var obj in background.children) {
+                       if((typeof background.children[obj].tick) === "function")
+                           background.children[obj].tick()
+                   }
+
+                //spacecraft.tick()
                }
            }
-
-
         }
+        Joystick {
+            id:stick
+            radius: units.gu(15)
+            anchors { bottom: parent.bottom; right: parent.right; bottomMargin: 10; rightMargin:10;}
+            //y:parent.height
+            //x:parent.width
+            onForceChanged: {joyF.update(force)}
+            onDirectionChanged: {joyDir.update(direction)}
+            onDxChanged: {joyX.update(dx)}
+            onDyChanged: {joyY.update(dy);}
+            /*Component.onCompleted: {stick.x = stick.parent.width - stick.width;
+                stick.y = stick.parent.height - stick.height;
+                console.log(stick.parent.height)}*/
+        }
+        Item {
+             anchors { bottom: parent.bottom; left: parent.left; bottomMargin: 10; rightMargin:10;}
+            height:units.gu(30)
+            width:units.gu(30)
+            Circle {
+                id:button_a
+                anchors { top: parent.top; left: parent.left;}
+                radius:units.gu(5)
+                border.color: "#ffffff"
+                border.width: 1
+                color: "transparent"
+                text:"A"
+                MultiPointTouchArea {
+                    id: ba_click
+                    anchors.fill: parent
+                    onPressed: {console.log("a fired");
+
+                        background.fire()
+                    }
+                }
+            }
+            Circle {
+                id:button_b
+                anchors { top: button_a.bottom; left: button_a.right;}
+                radius:units.gu(5)
+                border.color: "#ffffff"
+                border.width: 1
+                color: "transparent"
+                text:"B"
+                MultiPointTouchArea {
+                    id: bb_click
+                    anchors.fill: parent
+                    onPressed: {console.log("b fired");spacecraft.color = "red";background.createSpriteObjects({"x":50, "y":50, "vy":10.0, "vx":100.4})}
+                }
+            }
+        }
+
+
+
+
+
 
 
     }

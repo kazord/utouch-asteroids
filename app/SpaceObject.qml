@@ -5,7 +5,6 @@ Circle {
     color: "black"
     radius:units.gu(0.5)
 
-
     property double vx: 0
     property double vy: 0
     signal tick()
