@@ -7,15 +7,21 @@ SpaceObject {
     property double minspeed: units.gu(1)
     property double speed: units.gu(1)
     property double maxspeed: units.gu(1)*8
+    signal hit(var cible)
+    onHit: {
+        if((typeof cible.hit) === "function")//spacecraft or another fire
+            return
+        console.log("gotcha");
+        game.stop()
+    }
+
     onTick: {
         vx = Math.sin(stick.direction)*stick.force*speed
         vy = -1* Math.cos(stick.direction)*stick.force*speed
         if(vx != 0 && vy != 0) {
             rotation = stick.direction*(180/Math.PI)
-            //spacecraft_img_moving.visible = true
         }
         else {
-            //spacecraft_img_moving.visible = false
         }
 
         speed*=1.02*stick.force

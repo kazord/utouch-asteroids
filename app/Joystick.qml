@@ -10,7 +10,8 @@ Circle {
     property double force:0
     property int dx: 0
     property int dy: 0
-
+    property bool tickmode: false
+    signal tick()
         Circle {
             id: stick
             border.color: "red"
@@ -45,7 +46,6 @@ Circle {
             }
             onXChanged: {
                 parent.dx = (stick.x+stick.width/2)-(joystick_area.width/2)
-                console.log(centerX)
             }
             onYChanged: {
                 parent.dy = (stick.y+stick.width/2)-(joystick_area.width/2)
@@ -55,13 +55,32 @@ Circle {
             Component.onCompleted: {reset()}
         }
         onDyChanged: {
-            direction = Math.atan2(dx, -dy)//* (180 / Math.PI)
-            force = Math.sqrt(dx*dx+dy*dy) / ((joystick_area.width-stick.width)/2)
-            if(force > 1.0) force = 1.0
+            if(!tickmode) {
+                direction = Math.atan2(dx, -dy)//* (180 / Math.PI)
+                force = Math.sqrt(dx*dx+dy*dy) / ((joystick_area.width-stick.width)/2)
+                if(force > 1.0) force = 1.0
+                if(force < 0.2) force = 0
+                 else force -= 0.2
+            }
+
+
         }
         onDxChanged: {
-            direction = Math.atan2(dx, -dy)//* (180 / Math.PI)
-            force = Math.sqrt(dx*dx+dy*dy) / ((joystick_area.width-stick.width)/2)
-            if(force > 1.0) force = 1.0
+            if(!tickmode) {
+                direction = Math.atan2(dx, -dy)//* (180 / Math.PI)
+                force = Math.sqrt(dx*dx+dy*dy) / ((joystick_area.width-stick.width)/2)
+                if(force > 1.0) force = 1.0
+                if(force < 0.2) force = 0
+                else force -= 0.2
+            }
+
+
+        }
+        onTick: {
+             if(tickmode) {
+                force = (force+0.01)*-1*dy/((joystick_area.width-stick.width)/2)
+                if(force > 1.0) force = 1.0
+                direction= direction+dx/((joystick_area.width-stick.width)/2)/2/Math.PI
+             }
         }
 }

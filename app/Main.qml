@@ -46,6 +46,14 @@ MainView {
                     console.log("Error creating object");
                 }
             }
+            function createPlanet(myProp) {
+                var component = Qt.createComponent("Planet.qml");
+                var sprite = component.createObject(background, myProp);
+                if (sprite === null) {
+                    // Error Handling
+                    console.log("Error creating object");
+                }
+            }
             function fire() {
                 var fire_speed = spacecraft.minspeed*1.5
                 var component = Qt.createComponent("FireObject.qml");
@@ -53,60 +61,32 @@ MainView {
                                                         "centerY":spacecraft.centerY-spacecraft.radius*Math.cos(spacecraft.rotation*(Math.PI/180)),
                                                         "vy":-fire_speed*Math.cos(spacecraft.rotation*(Math.PI/180)),
                                                         "vx":fire_speed*Math.sin(spacecraft.rotation*(Math.PI/180)),
+                                                        "rotation":spacecraft.rotation,
                                                         "color": "white"});
                 if (sprite === null) {
                     // Error Handling
                     console.log("Error creating object");
                 }
             }
-            Text {
-                id: joyX
-                color: "black"
-                y:units.gu(10)
-                x:units.gu(40)
-
-                text: "X:"
-                signal update(int new_x)
-                onUpdate: {text = "X:"+new_x}
+            Planet {
+                vx:Math.ceil(Math.random() * 8)-4
+                vy:Math.ceil(Math.random() * 8)-4
             }
-
-            Text {
-                id: joyY
-                color: "black"
-                y:units.gu(40)
-                x:units.gu(10)
-
-                text: "Y:"
-                signal update(int new_y)
-                onUpdate: {text = "Y:"+new_y}
+            Planet {
+                vx:Math.ceil(Math.random() * 8)-4
+                vy:Math.ceil(Math.random() * 8)-4
             }
-            Text {
-                id: joyDir
-                color: "black"
-                y:units.gu(40)
-                x:units.gu(40)
-
-                text: "Dir:"
-                signal update(double new_dir)
-                onUpdate: {text = "Dir:"+new_dir}
+            Planet {
+                vx:Math.ceil(Math.random() * 8)-4
+                vy:Math.ceil(Math.random() * 8)-4
             }
-            Text {
-                id: joyF
-                color: "black"
-                y:units.gu(50)
-                x:units.gu(40)
-
-                text: "F:"
-                signal update(double new_dir)
-                onUpdate: {text = "F:"+new_dir}
-            }
-
 
 
             SpaceCraft {
                 id:spacecraft
                 color:"transparent"
-                y:100
+                centerY:background.width/2
+                centerX:background.height/2
             }
             SpaceCraft {
                 id:spacecraft_shade_px
@@ -153,15 +133,29 @@ MainView {
             }*/
 
             Timer {
+                id:game
                interval: 50; running: true; repeat: true
                onTriggered: {
                 //asteroids.tick()
                    for(var obj in background.children) {
-                       if((typeof background.children[obj].tick) === "function")
+                       if((typeof background.children[obj].tick) === "function") {
                            background.children[obj].tick()
+                           if((typeof background.children[obj].hit) === "function") {
+                                for(var obj2 in background.children) {
+                                    if((typeof background.children[obj2].centerX) !== "undefined" && obj !== obj2) {
+                                        if(Math.sqrt(
+                                                (background.children[obj].centerX-background.children[obj2].centerX) * (background.children[obj].centerX-background.children[obj2].centerX)
+                                                +(background.children[obj].centerY-background.children[obj2].centerY) * (background.children[obj].centerY-background.children[obj2].centerY))
+                                            - background.children[obj].radius - background.children[obj2].radius <= 0)
+                                        background.children[obj].hit(background.children[obj2])
+                                    }
+                               }
+                           }
+                       }
                    }
 
-                //spacecraft.tick()
+
+                stick.tick()
                }
            }
         }
@@ -169,15 +163,6 @@ MainView {
             id:stick
             radius: units.gu(15)
             anchors { bottom: parent.bottom; right: parent.right; bottomMargin: 10; rightMargin:10;}
-            //y:parent.height
-            //x:parent.width
-            onForceChanged: {joyF.update(force)}
-            onDirectionChanged: {joyDir.update(direction)}
-            onDxChanged: {joyX.update(dx)}
-            onDyChanged: {joyY.update(dy);}
-            /*Component.onCompleted: {stick.x = stick.parent.width - stick.width;
-                stick.y = stick.parent.height - stick.height;
-                console.log(stick.parent.height)}*/
         }
         Item {
              anchors { bottom: parent.bottom; left: parent.left; bottomMargin: 10; rightMargin:10;}
@@ -194,8 +179,7 @@ MainView {
                 MultiPointTouchArea {
                     id: ba_click
                     anchors.fill: parent
-                    onPressed: {console.log("a fired");
-
+                    onPressed: {
                         background.fire()
                     }
                 }
@@ -211,7 +195,10 @@ MainView {
                 MultiPointTouchArea {
                     id: bb_click
                     anchors.fill: parent
-                    onPressed: {console.log("b fired");spacecraft.color = "red";background.createSpriteObjects({"x":50, "y":50, "vy":10.0, "vx":100.4})}
+                    onPressed: {
+                        spacecraft.centerX = Math.ceil(Math.random() * background.width)
+                        spacecraft.centerY = Math.ceil(Math.random() * background.height)
+                    }
                 }
             }
         }
