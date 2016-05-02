@@ -12,7 +12,10 @@ SpaceObject {
         if((typeof cible.hit) === "function")//spacecraft or another fire
             return
         console.log("gotcha");
-        game.stop()
+        gameevent.stop()
+        restart_msg.text = "Game Over\nRestart ?"
+        restart_msg.visible = true
+
     }
 
     onTick: {

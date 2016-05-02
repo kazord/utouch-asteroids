@@ -24,6 +24,7 @@ Circle {
             Drag.source: joystickDragArea
             Drag.hotSpot.x: width / 2
             Drag.hotSpot.y: height / 2
+
             MouseArea {
                 id: joystickDragArea
 

@@ -3,20 +3,26 @@ import QtQuick 2.0
 Rectangle {
     property int centerX:0//in order to make circle fix during resize
     property int centerY:0//in order to make circle fix during resize
+    x:0
+    y:0
     property string text: ""
     property int textSize: 0
     onRadiusChanged: {
-        if(width == 0) {
+        width=radius*2
+        height=radius*2
+        if(x != 0 || y != 0) {
             //first position update
             xChanged()
             yChanged()
         }
+        if(centerX != 0 || centerY != 0) {
+            centerXChanged()
+            centerYChanged()
+        }
 
-        width=radius*2
-        height=radius*2
+
         //keep fix center
-        centerXChanged()
-        centerYChanged()
+
     }
     onCenterXChanged: {
         x = centerX - radius

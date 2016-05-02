@@ -25,7 +25,7 @@ MainView {
 
     width: units.gu(50)
     height: units.gu(75)
-
+    backgroundColor: "#282828"
 
     Item {
         anchors.fill:parent
@@ -33,8 +33,9 @@ MainView {
 
         Rectangle {
             id: background
+            anchors.horizontalCenter: parent.horizontalCenter
             clip:true
-            color: "#282828"
+            color: "#000000"
             height: units.gu(50)
             width: units.gu(50)
             x:0
@@ -68,7 +69,13 @@ MainView {
                     console.log("Error creating object");
                 }
             }
-            Planet {
+            Image {
+                    anchors.fill: parent
+                    fillMode: Image.Tile
+                    source: "../../../graphics/background.png"
+            }
+
+         /*   Planet {
                 vx:Math.ceil(Math.random() * 8)-4
                 vy:Math.ceil(Math.random() * 8)-4
             }
@@ -79,12 +86,15 @@ MainView {
             Planet {
                 vx:Math.ceil(Math.random() * 8)-4
                 vy:Math.ceil(Math.random() * 8)-4
-            }
+                image:"../../../graphics/planet2_420_525.png"
+            }*/
 
 
             SpaceCraft {
                 id:spacecraft
                 color:"transparent"
+                x:background.width/2-units.gu(2)
+                y:background.height/2-units.gu(2)
                 centerY:background.width/2
                 centerX:background.height/2
             }
@@ -95,6 +105,7 @@ MainView {
                 y:spacecraft.y
                 onTick: {
                     x = spacecraft.x+parent.height
+                    y = spacecraft.y
                 }
             }
             SpaceCraft {
@@ -104,6 +115,7 @@ MainView {
                 y:spacecraft.y
                 onTick: {
                     x = spacecraft.x-parent.height
+                    y = spacecraft.y
                 }
             }
             SpaceCraft {
@@ -112,6 +124,7 @@ MainView {
                 x:spacecraft.x
                 y:spacecraft.y+parent.width
                 onTick: {
+                    x = spacecraft.x
                     y = spacecraft.y+parent.width
                 }
             }
@@ -121,6 +134,7 @@ MainView {
                 x:spacecraft.x
                 y:spacecraft.y-parent.width
                 onTick: {
+                    x = spacecraft.x
                     y = spacecraft.y-parent.width
                 }
             }
@@ -133,10 +147,11 @@ MainView {
             }*/
 
             Timer {
-                id:game
-               interval: 50; running: true; repeat: true
+               id:gameevent
+               interval: 50; running: false; repeat: true
                onTriggered: {
                 //asteroids.tick()
+                   var levelfinish = true;
                    for(var obj in background.children) {
                        if((typeof background.children[obj].tick) === "function") {
                            background.children[obj].tick()
@@ -151,14 +166,115 @@ MainView {
                                     }
                                }
                            }
+                           else {//no planet
+                               levelfinish = false;
+                           }
                        }
                    }
 
 
                 stick.tick()
+                if(levelfinish) {
+                    console.log("levelfinish")
+                    gamebase.nextlevel()
+                }
                }
-           }
+            }
+               Item {
+                   id:gamebase
+                   property int score: 0
+                   property int level: 0
+                   property var img: ["../../../graphics/planet1_400_500.png", "../../../graphics/planet2_420_525.png", "../../../graphics/planet3_265_331.png", "../../../graphics/planet4_300_375.png"]
+                   signal start()
+                   signal nextlevel()
+                   signal cleanup()
+                   onStart: {
+                        cleanup()
+                        spacecraft.centerX = background.width/2
+                        spacecraft.centerY = background.height/2
+                       level = 0
+                       nextlevel()
+                   }
+                   onNextlevel: {
+                       spacecraft.centerX = background.width/2
+                       spacecraft.centerY = background.height/2
+                        level= level+1
+                       if(level === 5) {
+                           gameevent.stop()
+                           restart_msg.text  = "You win !\nRestart ?"
+                           restart_msg.visible = true
+                            return;
+                       }
+                       var speed
+                       speed = 4+4*level
+                       for(var i = 0 ; i < 2+level ; i+=1) {
+                            background.createPlanet({"radius":units.gu(4), "centerX": Math.ceil(Math.random() * background.width), "centerY": 0,
+                                                    "image": img[level-1],
+                                                    "vx":Math.ceil(Math.random() * speed)-speed/2,
+                                                    "vy":Math.ceil(Math.random() * speed)-speed/2})
+                       }
+                   }
+                   onCleanup: {
+                       for(var obj in background.children) {
+                           if((typeof background.children[obj].tick) === "function" && (typeof background.children[obj].hit) !== "function") {
+                               background.children[obj].destroy()
+                            }
+                       }
+                   }
+               }
         }
+        Text {
+            id:start_msg
+            anchors { top: parent.top; horizontalCenter: parent.horizontalCenter; topMargin:units.gu(20);}
+            color: "#ffffff"
+            text: "Start"
+            scale: 2
+
+            Rectangle {
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
+                width:parent.width*1.5
+                height:parent.height*1.5
+                border.width: 1
+                border.color: "#ffffff"
+                color: "transparent"
+                MultiPointTouchArea {
+                    anchors.fill: parent
+                    onPressed: {
+                        start_msg.visible=false
+                        gamebase.start()
+                        gameevent.start()
+                    }
+                }
+            }
+        }
+        Text {
+            id:restart_msg
+            anchors { top: parent.top; horizontalCenter: parent.horizontalCenter; topMargin:units.gu(20);}
+            color: "#ffffff"
+            text: "Game Over\nRestart ?"
+            scale: 2
+            visible: false
+            Rectangle {
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
+                width:parent.width*1.5
+                height:parent.height*1.5
+                border.width: 1
+                border.color: "#ffffff"
+                color: "transparent"
+                MultiPointTouchArea {
+                    anchors.fill: parent
+                    onPressed: {
+                        restart_msg.visible=false
+                        gamebase.start()
+                        gameevent.start()
+                    }
+                }
+            }
+        }
+
+
         Joystick {
             id:stick
             radius: units.gu(15)
@@ -175,12 +291,13 @@ MainView {
                 border.color: "#ffffff"
                 border.width: 1
                 color: "transparent"
-                text:"A"
+                text:"Jmp"
                 MultiPointTouchArea {
                     id: ba_click
                     anchors.fill: parent
                     onPressed: {
-                        background.fire()
+                        spacecraft.centerX = Math.ceil(Math.random() * background.width)
+                        spacecraft.centerY = Math.ceil(Math.random() * background.height)
                     }
                 }
             }
@@ -191,13 +308,13 @@ MainView {
                 border.color: "#ffffff"
                 border.width: 1
                 color: "transparent"
-                text:"B"
+                text:"Fire"
                 MultiPointTouchArea {
                     id: bb_click
                     anchors.fill: parent
                     onPressed: {
-                        spacecraft.centerX = Math.ceil(Math.random() * background.width)
-                        spacecraft.centerY = Math.ceil(Math.random() * background.height)
+                        background.fire()
+
                     }
                 }
             }

@@ -1,6 +1,6 @@
 [Desktop Entry]
 _Name=Asteroids
-Comment=My project description
+Comment=An Asteroids game
 Exec=@EXEC@
 Icon=@ICON@
 Terminal=false
