@@ -26,15 +26,19 @@ Rectangle {
     }
     onCenterXChanged: {
         x = centerX - radius
+         console.log("x")
        }
     onCenterYChanged: {
         y = centerY - radius
+        console.log("y")
     }
     onXChanged: {
         centerX = x + radius
+         console.log("cx")
     }
     onYChanged: {
         centerY = y + radius
+         console.log("cy")
     }
     onTextChanged: {
         subtext.text = text
@@ -43,7 +47,7 @@ Rectangle {
         subtext.font.pixelSize = textSize
     }
 
-    //Component.onCompleted: {console.log(x)}
+    Component.onCompleted: {console.log("new")}
     Text {
         id:subtext
         anchors { horizontalCenter: parent.horizontalCenter; verticalCenter: parent.verticalCenter;}
