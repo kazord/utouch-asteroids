@@ -7,10 +7,12 @@ Circle {
 
     property double vx: 0
     property double vy: 0
+    property double rot: 0
     signal tick()
     onTick: {
         x += vx
         y += vy
+        rotation += rot
         if(centerX > parent.width) {
             centerX = 0;
         }

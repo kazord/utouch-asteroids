@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/fonts">
+        <file>fonts/Hi.sfd</file>
+    </qresource>
+    <qresource prefix="/graphics">
+        <file>graphics/background.png</file>
+        <file>graphics/planet1_400_500.png</file>
+        <file>graphics/planet2_420_525.png</file>
+        <file>graphics/planet3_265_331.png</file>
+        <file>graphics/planet4_300_375.png</file>
+        <file>graphics/spaceship_moving.png</file>
+        <file>graphics/spaceship.png</file>
+    </qresource>
+</RCC>

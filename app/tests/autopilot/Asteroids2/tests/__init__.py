@@ -4,7 +4,7 @@
 import os
 import logging
 
-import Asteroids
+import Asteroids2
 
 from autopilot.testcase import AutopilotTestCase
 from autopilot import logging as autopilot_logging
@@ -23,12 +23,12 @@ class BaseTestCase(AutopilotTestCase):
 
     local_location = os.path.dirname(os.path.dirname(os.getcwd()))
     local_location_qml = os.path.join(local_location, 'Main.qml')
-    click_package = '{0}.{1}'.format('Asteroids', 'kazord')
+    click_package = '{0}.{1}'.format('Asteroids2', 'kazord')
 
     def setUp(self):
         super(BaseTestCase, self).setUp()
         self.launcher, self.test_type = self.get_launcher_and_type()
-        self.app = Asteroids.TouchApp(self.launcher(), self.test_type)
+        self.app = Asteroids2.TouchApp(self.launcher(), self.test_type)
 
     def get_launcher_and_type(self):
         if os.path.exists(self.local_location_qml):

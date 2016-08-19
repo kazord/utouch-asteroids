@@ -7,6 +7,7 @@ set(UBUNTU_MANIFEST_PATH "manifest.json.in" CACHE INTERNAL "Tells QtCreator loca
 find_package(Qt5Core)
 find_package(Qt5Qml)
 find_package(Qt5Quick)
+find_package(Qt5Multimedia)
 # Find_package(ubuntu-sdk-libs)
 
 #automatically create moc files
@@ -35,7 +36,7 @@ option(INSTALL_TESTS "Install the tests on make install" on)
 
 set(APP_NAME          Asteroids)
 set(APP_ID            "asteroids.kazord")
-set(ASTEROIDS_DIR "share/qml/Asteroids")
+set(ASTEROIDS_DIR "qml/Asteroids")
 set(MAIN_QML          "Main.qml")
 set(ICON              "graphics/Asteroids.png")
 
@@ -46,7 +47,7 @@ set(DESKTOP_DIR ${DATA_DIR})
 set(DESKTOP_FILE_NAME "Asteroids.desktop")
 
 # This sets the commandline that is executed on the device
-set(EXEC "qmlscene $@ ${ASTEROIDS_DIR}/${MAIN_QML}")
+set(EXEC "qmlscene $@ ${MAIN_QML}")
 
 # Configures the manifest file. The manifest file describes the click package
 # to the target system. All cmake variables that are defined at this point
@@ -56,6 +57,8 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/manifest.json
         DESTINATION ${CMAKE_INSTALL_PREFIX})
 
 install(DIRECTORY "app/graphics" DESTINATION ${DATA_DIR})
+install(DIRECTORY "app/fonts" DESTINATION ${DATA_DIR})
+install(DIRECTORY "app/sounds" DESTINATION ${DATA_DIR})
 install(FILES "Asteroids.apparmor" DESTINATION ${DATA_DIR})
 
 add_subdirectory(app)

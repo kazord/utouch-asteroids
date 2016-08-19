@@ -2,7 +2,7 @@
 
 from autopilot.matchers import Eventually
 from testtools.matchers import Equals
-from Asteroids import tests
+from Asteroids2 import tests
 
 
 class MainViewTestCase(tests.BaseTestCase):
